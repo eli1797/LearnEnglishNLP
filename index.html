@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>NLP English MVP</title>
+  <meta name="description" content="NLP English MVP">
+  <meta name="author" content="SitePoint">
+
+  <!-- <link rel="stylesheet" href="css/styles.css?v=1.0"> -->
+
+</head>
+
+<body>
+  
+
+  <h1>Learn English NLP MVP</h1>
+  <p>Type your text into the box below</p>
+  <form id="inputTextForm">
+  	Your text:<br>
+  	<input type="text" name="inputText"><br>
+  	<input type="radio" id="nlpTypeNoun" name="nlpType" value="Noun" checked>Noun<br>
+  	<input type="radio" id="nlpTypeEntity" name="nlpType" value="Entity">Entity
+ 
+  </form>
+
+  <button id='submitButton'>Submit
+  </button>
+
+  <div id="response"></div>
+
+  <!-- <script src="js/scripts.js"></script> -->
+  <script>
+
+    var submitButton = document.getElementById("submitButton")
+    submitButton.addEventListener("click", submitTextFunction, false);
+
+    function submitTextFunction(event) {
+      // document.body.appendChild("inputTextForm");
+      event.preventDefault();
+      console.log("Submitting")
+      var x = document.getElementById("inputTextForm");
+      var inputText = document.forms['inputTextForm']['inputText'].value;
+
+      var nlpType = 'noun'
+
+      if (document.getElementById("nlpTypeEntity").checked == true) {
+      	nlpType = 'entity'
+      }
+
+
+
+      const Http = new XMLHttpRequest();
+      var url='https://1edfqt5thh.execute-api.us-east-1.amazonaws.com/v0?text=' + inputText + '&type=' + nlpType;
+
+      console.log(url)
+
+      Http.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+          // Typical action to be performed when the document is ready:
+          var responseDiv = document.getElementById("response")
+          responseDiv.innerHTML = Http.responseText;
+        }
+      };
+
+      Http.open("GET", url);
+      Http.send();
+
+      return false;
+    }
+  </script>
+
+</body>
+</html>
