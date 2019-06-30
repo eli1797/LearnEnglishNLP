@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>JSON Custom Search API Example</title>
+  </head>
+  <body>
+    <h1>Custom Search</h1>
+    <div id="content"></div>
+    <img id="result" src="url"> 
+    <script>
+      function hndlr(response) {
+      console.log(response);
+      for (var i = 0; i < response.items.length; i++) {
+        var item = response.items[i];
+        console.log(item)
+        // in production code, item.htmlTitle should have the HTML entities escaped.
+        // document.getElementById("content").innerHTML += "<br>" + item.htmlTitle;
+        document.getElementById("content").innerHTML += "<img src=" + item.link + "><br>"
+      }
+
+      // document.getElementById("result").src = response.items[0].link
+    }
+    </script>
+    <script src="https://www.googleapis.com/customsearch/v1?q= dog&key=AIzaSyAB4SsUt4Hmt2PRe9i1Riiah9hcrf6kcOs&cx=017397368660021019417:64aky415iqu&callback=hndlr&searchType=image&imgSize=xlarge">
+    </script>
+  </body>
+</html>
