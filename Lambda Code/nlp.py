@@ -50,4 +50,13 @@ def get_syntax(text):
     
     to_return = to_return[:-1]
     
+    return_dict = {
+        'writeable': to_return,
+        'syntax': py_dict["SyntaxTokens"]
+    }
+    
+    to_return = json.dumps(return_dict)
+    
+    print(to_return)
+    
     return to_return

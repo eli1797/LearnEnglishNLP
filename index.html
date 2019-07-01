@@ -8,6 +8,8 @@
   <meta name="description" content="NLP English MVP">
   <meta name="author" content="SitePoint">
 
+  <script src="jquery-3.4.1.min.js"></script>
+
   <!-- <link rel="stylesheet" href="css/styles.css?v=1.0"> -->
 
 </head>
@@ -31,7 +33,55 @@
   <div id="response"></div>
 
   <!-- <script src="js/scripts.js"></script> -->
+  <div id="content"></div>
+<!--   <img id="result" src="url">  -->
+
   <script>
+    function hndlr(response) {
+      console.log("Logging hndlr response")
+      console.log(response);
+      var text = response.queries.request[0].searchTerms;
+      console.log(text);
+      document.getElementById("content").innerHTML += "<p>" + text.toUpperCase() + "</p>"
+
+      var imageSrcList = []
+      for (var i = 0; i < response.items.length; i++) {
+        var item = response.items[i];
+        console.log(item)
+        // in production code, item.htmlTitle should have the HTML entities escaped.
+        // document.getElementById("content").innerHTML += "<br>" + item.htmlTitle;
+        imageSrcList.push(item.link)
+        document.getElementById("content").innerHTML += "<img src=" + item.link + "><br>"
+      }
+
+      return imageSrcList
+    }
+
+    function customSearch(toLookup) {
+
+      var url = 'https://www.googleapis.com/customsearch/v1?key=AIzaSyAB4SsUt4Hmt2PRe9i1Riiah9hcrf6kcOs&cx=017397368660021019417:64aky415iqu&callback=hndlr&searchType=image&imgSize=small&num=3&callback=hndlr&q=' + toLookup;
+
+      console.log(url)
+
+      // var output = httpGetAsync(url, hndlr);
+
+      var result = $.getScript(url);
+
+      console.log(result)
+    }
+
+
+    function httpGetAsync(theUrl, callback){
+      var xmlHttp = new XMLHttpRequest();
+      xmlHttp.onreadystatechange = function() { 
+          if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+              callback(xmlHttp.response);
+      }
+      xmlHttp.open("GET", theUrl, true); // true for asynchronous 
+      xmlHttp.send(null);
+    }
+
+    
 
     var submitButton = document.getElementById("submitButton")
     submitButton.addEventListener("click", submitTextFunction, false);
@@ -49,22 +99,44 @@
       	nlpType = 'entity'
       }
 
+      var lookupList = []
 
-
-      const Http = new XMLHttpRequest();
-      var url='https://1edfqt5thh.execute-api.us-east-1.amazonaws.com/v0?text=' + inputText + '&type=' + nlpType;
+      // Make an http request to the lambda for nlp
+      var Http = new XMLHttpRequest();
+      var url = 'https://1edfqt5thh.execute-api.us-east-1.amazonaws.com/v0?text=' + inputText + '&type=' + nlpType;
 
       console.log(url)
 
+      // handle the response from the lambda function
       Http.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
           // Typical action to be performed when the document is ready:
-          var responseDiv = document.getElementById("response")
-          responseDiv.innerHTML = Http.responseText;
+          
+          //make the response a json object
+          var responseObj = JSON.parse(JSON.parse(Http.response));
+          console.log(responseObj);
+          console.log(responseObj.writeable);
+
+          //set the screen to show the writeable sentance
+          var responseDiv = document.getElementById("response");
+          responseDiv.innerHTML = responseObj.writeable;
+
+          //look in the syntax and custom search the nouns
+          for (var i = 0; i < responseObj.syntax.length; i++) {
+            var text = responseObj.syntax[i].Text;
+            console.log(text)
+            var type = responseObj.syntax[i].PartOfSpeech.Tag;
+            console.log(type);
+            if (type == "NOUN") {
+              customSearch(text);
+            }
+          }
         }
       };
 
-      Http.open("GET", url);
+      
+      Http.open("GET", url, true);
+      // Http.setRequestHeader("Content-Type", "application/json");
       Http.send();
 
       return false;
