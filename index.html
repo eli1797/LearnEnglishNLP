@@ -36,12 +36,12 @@
 
   <button id='submitButton'>Submit</button>
 
-  <div id="textResponse"></div>
+  <div id="response"></div>
   <div id="response" class="flex-container"></div>
 
   <!-- <script src="js/scripts.js"></script> -->
   
-  
+    
 
   <script>
     //Handles the response from the custom search api, parsing response and updating html
@@ -54,9 +54,11 @@
       var text = response.queries.request[0].searchTerms;
       console.log(text);
       //write it to the webpage
-      document.getElementById("textResponse").innerHTML += "<p>" + text.toUpperCase() + "</p>"
+      document.getElementById("response").innerHTML += "<div id=" + text + "><p>" + text.toUpperCase() + "</p></div>"
 
       var imageSrcList = []
+      //initialize a div for the pictures
+      document.getElementById(text).innerHTML += "<div id=\"response" + text  + "\" class=\"flex-container\"> "
       //get the link of every image and add it to the page
       for (var i = 0; i < response.items.length; i++) {
         var item = response.items[i];
@@ -64,9 +66,11 @@
         //add the link to the list
         imageSrcList.push(item.link)
         //add the image to the webpage
-        document.getElementById("response").innerHTML += "<img src=" + item.link + "><br>"
+        document.getElementById("response" + text).innerHTML += "<img src=" + item.link + "><br>"
       }
 
+      //close the div
+      document.getElementById(text).innerHTML += "<div id=\"response" + text + "class=\"flex-container\"> "
       return imageSrcList
     }
 
