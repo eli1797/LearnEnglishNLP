@@ -76,16 +76,31 @@
 
     // Calls the custom image search api with the search param toLookup
     // toLookup: string, the search query
-    function customSearch(toLookup) {
+    async function customSearch(toLookup) {
 
       //url to the api, sets the callback function to be hndlr (executed by jquery), adds the query string
-      var url = 'https://www.googleapis.com/customsearch/v1?key=AIzaSyAB4SsUt4Hmt2PRe9i1Riiah9hcrf6kcOs&cx=017397368660021019417:64aky415iqu&callback=hndlr&searchType=image&imgSize=small&num=5&q=' + toLookup;
+      var url = 'https://www.googleapis.com/customsearch/v1?key=AIzaSyAB4SsUt4Hmt2PRe9i1Riiah9hcrf6kcOs&cx=017397368660021019417:64aky415iqu&searchType=image&imgSize=small&num=5&q=' + toLookup;
 
       console.log(url)
 
       //call the api
-      var apiCall = $.getScript(url);
+      var apiCall = await $.getScript(url);
       //this response goes to the hndlr function
+      console.log("apiCall")
+      console.log(apiCall)
+
+      request({
+        uri: url,
+        body: "",
+        method: "GET"
+      }, postResponse)
+    }
+
+    function postResponse(err, response, body) {
+      console.log("Post Response")
+      console.log(err)
+      console.log(response)
+      console.log(body)
     }
 
     var submitButton = document.getElementById("submitButton")
