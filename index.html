@@ -134,7 +134,7 @@
       console.log(url)
 
       // handle the response from the lambda function
-      Http.onreadystatechange = function() {
+      Http.onreadystatechange = async function() {
         if (this.readyState == 4 && this.status == 200) {
           // Typical action to be performed when the document is ready:
           
@@ -154,7 +154,7 @@
             var type = responseObj.syntax[i].PartOfSpeech.Tag;
             console.log(type);
             if (type == "NOUN") {
-              customSearch(text);
+              await customSearch(text);
             }
           }
         }
