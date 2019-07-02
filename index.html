@@ -11,6 +11,13 @@
   <script src="jquery-3.4.1.min.js"></script>
 
   <!-- <link rel="stylesheet" href="css/styles.css?v=1.0"> -->
+  <style>
+    .flex-container {
+      display: flex;
+      flex-direction: row;
+    }
+
+  </style>
 
 </head>
 
@@ -27,19 +34,13 @@
  
   </form>
 
-  <button id='submitButton'>Submit
-  </button>
+  <button id='submitButton'>Submit</button>
 
+  <div id="textResponse"></div>
   <div id="response" class="flex-container"></div>
 
   <!-- <script src="js/scripts.js"></script> -->
-  <style>
-    .flex-container {
-      display: flex;
-      flex-direction: row;
-    }
-
-  </style>
+  
   
 
   <script>
@@ -48,7 +49,7 @@
       console.log(response);
       var text = response.queries.request[0].searchTerms;
       console.log(text);
-      document.getElementById("response").innerHTML += "<p>" + text.toUpperCase() + "</p>"
+      document.getElementById("textResponse").innerHTML += "<p>" + text.toUpperCase() + "</p>"
 
       var imageSrcList = []
       for (var i = 0; i < response.items.length; i++) {
