@@ -33,8 +33,7 @@
   <div id="response"></div>
 
   <!-- <script src="js/scripts.js"></script> -->
-  <div id="content"></div>
-<!--   <img id="result" src="url">  -->
+  
 
   <script>
     function hndlr(response) {
@@ -42,7 +41,7 @@
       console.log(response);
       var text = response.queries.request[0].searchTerms;
       console.log(text);
-      document.getElementById("content").innerHTML += "<p>" + text.toUpperCase() + "</p>"
+      document.getElementById("response").innerHTML += "<p>" + text.toUpperCase() + "</p>"
 
       var imageSrcList = []
       for (var i = 0; i < response.items.length; i++) {
@@ -51,7 +50,7 @@
         // in production code, item.htmlTitle should have the HTML entities escaped.
         // document.getElementById("content").innerHTML += "<br>" + item.htmlTitle;
         imageSrcList.push(item.link)
-        document.getElementById("content").innerHTML += "<img src=" + item.link + "><br>"
+        document.getElementById("response").innerHTML += "<img src=" + item.link + "><br>"
       }
 
       return imageSrcList
@@ -89,6 +88,8 @@
     function submitTextFunction(event) {
       // document.body.appendChild("inputTextForm");
       event.preventDefault();
+
+      document.getElementById("response").innerHTML = "";
       console.log("Submitting")
       var x = document.getElementById("inputTextForm");
       var inputText = document.forms['inputTextForm']['inputText'].value;
