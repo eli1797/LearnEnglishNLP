@@ -44,51 +44,45 @@
   
 
   <script>
+    //Handles the response from the custom search api, parsing response and updating html
+    // response: json?, the response from the custom search api
     function hndlr(response) {
       console.log("Logging hndlr response")
       console.log(response);
+
+      //parse the search query from the response
       var text = response.queries.request[0].searchTerms;
       console.log(text);
+      //write it to the webpage
       document.getElementById("textResponse").innerHTML += "<p>" + text.toUpperCase() + "</p>"
 
       var imageSrcList = []
+      //get the link of every image and add it to the page
       for (var i = 0; i < response.items.length; i++) {
         var item = response.items[i];
         console.log(item)
-        // in production code, item.htmlTitle should have the HTML entities escaped.
-        // document.getElementById("content").innerHTML += "<br>" + item.htmlTitle;
+        //add the link to the list
         imageSrcList.push(item.link)
+        //add the image to the webpage
         document.getElementById("response").innerHTML += "<img src=" + item.link + "><br>"
       }
 
       return imageSrcList
     }
 
+    // Calls the custom image search api with the search param toLookup
+    // toLookup: string, the search query
     function customSearch(toLookup) {
 
-      var url = 'https://www.googleapis.com/customsearch/v1?key=AIzaSyAB4SsUt4Hmt2PRe9i1Riiah9hcrf6kcOs&cx=017397368660021019417:64aky415iqu&callback=hndlr&searchType=image&imgSize=small&num=3&callback=hndlr&q=' + toLookup;
+      //url to the api, sets the callback function to be hndlr (executed by jquery), adds the query string
+      var url = 'https://www.googleapis.com/customsearch/v1?key=AIzaSyAB4SsUt4Hmt2PRe9i1Riiah9hcrf6kcOs&cx=017397368660021019417:64aky415iqu&callback=hndlr&searchType=image&imgSize=small&num=3&q=' + toLookup;
 
       console.log(url)
 
-      // var output = httpGetAsync(url, hndlr);
-
-      var result = $.getScript(url);
-
-      console.log(result)
+      //call the api
+      var apiCall = $.getScript(url);
+      //this response goes to the hndlr function
     }
-
-
-    function httpGetAsync(theUrl, callback){
-      var xmlHttp = new XMLHttpRequest();
-      xmlHttp.onreadystatechange = function() { 
-          if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
-              callback(xmlHttp.response);
-      }
-      xmlHttp.open("GET", theUrl, true); // true for asynchronous 
-      xmlHttp.send(null);
-    }
-
-    
 
     var submitButton = document.getElementById("submitButton")
     submitButton.addEventListener("click", submitTextFunction, false);
