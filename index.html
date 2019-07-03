@@ -44,6 +44,25 @@
     
 
   <script>
+
+    callDictionaryApi()
+
+    //call the dictionary api
+    async function callDictionaryApi() {
+      console.log("Calling Dictionary API");
+      var apiKey = 'dict.1.1.20190703T022913Z.03611940feae04f8.8a82d473672ff7ee49901016430df9394e379d4b';
+      var url = 'https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=' + apiKey + '&lang=en-ru&text=dog&callback=logdict';
+
+      var dictResponse = await $.getScript(url);
+
+      console.log(dictResponse);
+    }
+
+    function logdict(response) {
+      console.log("Print in log dict")
+      console.log(response)
+    }
+
     //Handles the response from the custom search api, parsing response and updating html
     // response: javascript, the response from the custom search api
     function hndlr(response) {
