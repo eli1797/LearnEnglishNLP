@@ -10,9 +10,6 @@ def lambda_handler(event, context):
     print('event:' + json.dumps(event))
     
     to_return = "Failed to processes text"
-    
-    #get the comprehend service from amazon
-    comprehend = boto3.client(service_name='comprehend', region_name='us-east-1')
 
     #extract the text from the event
     text = "It is raining today in Seattle"
@@ -38,7 +35,7 @@ def lambda_handler(event, context):
     else:
         to_return = nlp.get_entities(text)
     
-    print("To Return: " + to_return)
+    print("To Return: " + str(to_return))
     
     return {
         'statusCode': 200,

@@ -33,7 +33,7 @@ def get_syntax(text):
     
     py_dict = json.loads(json_reponse)
         
-    to_return = ""
+    return_string = ""
     
     print(py_dict["SyntaxTokens"])
             
@@ -42,21 +42,20 @@ def get_syntax(text):
         for cur in py_dict["SyntaxTokens"]:
             if word == cur["Text"] and (cur["PartOfSpeech"]["Tag"] == "NOUN" or cur["PartOfSpeech"]["Tag"] == "PROPN"):
                 print(f'{word} is a Noun')
-                to_return += word.upper() + " "
+                return_string += word.upper() + " "
                 usedflag = True
                 break
         if not usedflag:
-            to_return += word + " "
+            return_string += word + " "
     
-    to_return = to_return[:-1]
+    return_string = return_string[:-1]
     
     return_dict = {
-        'writeable': to_return,
+        'writeable': return_string,
         'syntax': py_dict["SyntaxTokens"]
     }
+
     
-    to_return = json.dumps(return_dict)
+    print(return_dict)
     
-    print(to_return)
-    
-    return to_return
+    return return_dict
