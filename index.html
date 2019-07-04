@@ -37,7 +37,6 @@
   <button id='submitButton'>Submit</button>
 
   <div id="response"></div>
-  <div id="response" class="flex-container"></div>
 
   <!-- <script src="js/scripts.js"></script> -->
   
@@ -45,22 +44,40 @@
 
   <script>
 
-    callDictionaryApi()
 
     //call the dictionary api
-    async function callDictionaryApi() {
-      console.log("Calling Dictionary API");
-      var apiKey = 'dict.1.1.20190703T022913Z.03611940feae04f8.8a82d473672ff7ee49901016430df9394e379d4b';
-      var url = 'https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=' + apiKey + '&lang=en-ru&text=dog&callback=logdict';
+    async function callDictionaryApi(query) {
+      console.log("Calling WORDSAPI");
+      var url = 'https://googledictionaryapi.eu-gb.mybluemix.net/?define=' + query + '&lang=en';
 
-      var dictResponse = await $.getScript(url);
+      var Http = new XMLHttpRequest();
 
-      console.log(dictResponse);
+      console.log(url)
+
+      // handle the response from the lambda function
+      Http.onreadystatechange = async function() {
+        if (this.readyState == 4 && this.status == 200) {
+          // Typical action to be performed when the document is ready:
+          
+          //make the response a json object
+          var responseObj = JSON.parse(Http.response);
+
+          console.log(responseObj)
+          console.log(responseObj[0].meaning.noun);
+          for (var i = 0; i < responseObj[0].meaning.noun.length - 1; i++) {
+            document.getElementById(query).innerHTML += "<p>" + responseObj[0].meaning.noun[i].definition + "</p>"
+          }
+        }
+      }
+
+      Http.open("GET", url, true);
+      // Http.setRequestHeader("Content-Type", "application/json");
+      Http.send();
     }
 
     function logdict(response) {
       console.log("Print in log dict")
-      console.log(response)
+      console.log(JSON.parse(response))
     }
 
     //Handles the response from the custom search api, parsing response and updating html
@@ -72,8 +89,6 @@
       //parse the search query from the response
       var text = response.queries.request[0].searchTerms;
       console.log(text);
-      //write it to the webpage
-      document.getElementById("response").innerHTML += "<div id=" + text + "><p>" + text.toUpperCase() + "</p></div>"
 
       var imageSrcList = []
       //initialize a div for the pictures
@@ -96,6 +111,8 @@
     // Calls the custom image search api with the search param toLookup
     // toLookup: string, the search query
     async function customSearch(toLookup) {
+
+      console.log("In customsearch")
 
       //url to the api, sets the callback function to be hndlr (executed by jquery), adds the query string
       var url = 'https://www.googleapis.com/customsearch/v1?key=AIzaSyAB4SsUt4Hmt2PRe9i1Riiah9hcrf6kcOs&cx=017397368660021019417:64aky415iqu&callback=hndlr&searchType=image&imgSize=small&num=5&q=' + toLookup;
@@ -148,7 +165,8 @@
 
       // Make an http request to the lambda for nlp
       var Http = new XMLHttpRequest();
-      var url = 'https://1edfqt5thh.execute-api.us-east-1.amazonaws.com/v0?text=' + inputText + '&type=' + nlpType;
+      var url = 'https://0b274ckkw7.execute-api.us-east-1.amazonaws.com/default/spacy_nlp?text=' + inputText + '&type=' + nlpType;
+      // var url = 'https://1edfqt5thh.execute-api.us-east-1.amazonaws.com/v0?text=' + inputText + '&type=' + nlpType;
 
       console.log(url)
 
@@ -167,13 +185,27 @@
           responseDiv.innerHTML = responseObj.writeable;
 
           //look in the syntax and custom search the nouns
-          for (var i = 0; i < responseObj.syntax.length; i++) {
-            var text = responseObj.syntax[i].Text;
-            console.log(text)
-            var type = responseObj.syntax[i].PartOfSpeech.Tag;
-            console.log(type);
-            if (type == "NOUN") {
-              await customSearch(text);
+
+          // BASIC NLP
+          // for (var i = 0; i < responseObj.syntax.length; i++) {
+          //   var text = responseObj.syntax[i].Text;
+          //   console.log(text)
+          //   var type = responseObj.syntax[i].PartOfSpeech.Tag;
+          //   console.log(type);
+          //   if (type == "NOUN") {
+          //     await customSearch(text);
+          //   }
+          // }
+
+          // SPACY NLP
+          for (const [key, value] of Object.entries(responseObj.syntax)) {
+            // console.log(key, value);
+            if (value == "NOUN") {
+              //write it to the webpage
+              document.getElementById("response").innerHTML += "<div id=" + key + "><p>" + key.toUpperCase() + "</p></div>"
+             
+              callDictionaryApi(key);
+              customSearch(key);
             }
           }
         }
