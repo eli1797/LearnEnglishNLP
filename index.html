@@ -34,7 +34,15 @@
  
   </form>
 
-  <button id='submitButton'>Submit</button>
+  <button id='submitButton'>Submit</button> <br>
+
+  <iframe id="visualizer" style="visibility: hidden; border:none;" width="80%"></iframe> 
+  <script type="text/javascript">
+  function AdjustIframeHeightOnLoad() { document.getElementById("visualizer").style.height = document.getElementById("visualizer").contentWindow.document.body.scrollHeight + "px"; }
+  function AdjustIframeHeight(i) { document.getElementById("visualizer").style.height = parseInt(i) + "px"; }
+  </script>
+
+
 
   <div id="response"></div>
 
@@ -43,8 +51,6 @@
     
 
   <script>
-
-
     //call the dictionary api
     async function callDictionaryApi(query) {
       console.log("Calling WORDSAPI");
@@ -186,7 +192,7 @@
 
           //look in the syntax and custom search the nouns
 
-          // BASIC NLP
+          // BASIC NLP Parsing
           // for (var i = 0; i < responseObj.syntax.length; i++) {
           //   var text = responseObj.syntax[i].Text;
           //   console.log(text)
@@ -197,7 +203,7 @@
           //   }
           // }
 
-          // SPACY NLP
+          // SPACY NLP Parsing
           for (const [key, value] of Object.entries(responseObj.syntax)) {
             // console.log(key, value);
             if (value == "NOUN") {
@@ -205,9 +211,20 @@
               document.getElementById("response").innerHTML += "<div id=" + key + "><p>" + key.toUpperCase() + "</p></div>"
              
               callDictionaryApi(key);
-              customSearch(key);
+              // customSearch(key);
             }
           }
+
+          toWrite = responseObj.html
+          console.log(toWrite)
+          
+          var doc = document.getElementById('visualizer').contentWindow.document;
+          doc.open();
+          doc.write(toWrite);
+          doc.close();
+          AdjustIframeHeightOnLoad()
+          document.getElementById("visualizer").style.visibility = "visible"; 
+
         }
       };
 
